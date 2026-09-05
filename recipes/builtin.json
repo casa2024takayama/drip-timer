@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "recipes": [
+    {
+      "id": "builtin-46",
+      "name": "4:6メソッド",
+      "author": "粕谷 哲（World Brewers Cup 2016 優勝レシピの一般公開版）",
+      "description": "湯量を5回に分けて注ぐ。前半40%（1〜2回目）で味を、後半60%（3〜5回目）で濃度を調整する。1回目を少なめにすると甘さが、多めにすると明るい酸が出やすい。後半の回数を増やすと濃く、減らすと軽くなる。",
+      "coffee_g": 20,
+      "water_g": 300,
+      "temp_c": 92,
+      "grind": "粗挽き",
+      "steps": [
+        { "at_s": 0,   "target_g": 60,  "label": "1回目（蒸らし）", "note": "粉全体に行き渡るように" },
+        { "at_s": 45,  "target_g": 120, "label": "2回目", "note": "ここまでで味が決まる" },
+        { "at_s": 90,  "target_g": 180, "label": "3回目", "note": "以降は濃度の調整" },
+        { "at_s": 135, "target_g": 240, "label": "4回目", "note": "" },
+        { "at_s": 165, "target_g": 300, "label": "5回目", "note": "" }
+      ],
+      "finish_s": 210,
+      "tags": ["定番", "V60"]
+    },
+    {
+      "id": "builtin-v60",
+      "name": "ハリオ V60 標準",
+      "author": "HARIO 推奨レシピの要約",
+      "description": "蒸らし後、2回に分けて注ぐシンプルなレシピ。中心から外へ円を描くように注ぎ、ペーパーに直接湯をかけない。",
+      "coffee_g": 15,
+      "water_g": 225,
+      "temp_c": 93,
+      "grind": "中挽き",
+      "steps": [
+        { "at_s": 0,  "target_g": 30,  "label": "蒸らし", "note": "粉全体を湿らせて30〜45秒待つ" },
+        { "at_s": 45, "target_g": 150, "label": "1回目", "note": "中心から外へ、ゆっくり" },
+        { "at_s": 90, "target_g": 225, "label": "2回目", "note": "湯面を保ちながら" }
+      ],
+      "finish_s": 165,
+      "tags": ["定番", "V60"]
+    }
+  ]
+}

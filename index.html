@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ドリップタイマー</title>
+<meta name="description" content="ハンドドリップのレシピを、目標の湯量と秒数で案内するタイマー。スケールを見ながらレシピ通りに淹れる。">
+<meta name="theme-color" content="#f6efe6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1612" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ドリップ">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="app" class="app">
+  <header class="topbar">
+    <button class="icon-btn" id="btn-back" hidden aria-label="戻る">‹</button>
+    <h1 class="topbar-title" id="topbar-title">ドリップタイマー</h1>
+    <button class="icon-btn" id="btn-menu" aria-label="メニュー">⋯</button>
+  </header>
+  <main id="view" class="view" aria-live="polite"></main>
+  <nav class="tabbar" id="tabbar">
+    <button data-route="home" class="tab active"><span class="tab-ic">☕</span>レシピ</button>
+    <button data-route="history" class="tab"><span class="tab-ic">📓</span>履歴</button>
+    <button data-route="settings" class="tab"><span class="tab-ic">⚙︎</span>設定</button>
+  </nav>
+</div>
+<div id="toast" class="toast" hidden></div>
+<dialog id="dialog" class="dialog"></dialog>
+<script src="js/vendor/qrcode.js"></script>
+<script type="module" src="js/app.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
+</script>
+</body>
+</html>

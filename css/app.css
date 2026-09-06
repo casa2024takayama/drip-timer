@@ -10,6 +10,7 @@
   --accent: #b8622b;      /* 銅 */
   --accent-ink: #fff;
   --accent-soft: #f3dfcf;
+  --scene: #f4e9dc;
   --ok: #4f7d4a;
   --warn: #c2452d;
   --shadow: 0 1px 2px rgba(60, 40, 20, .06), 0 8px 24px -12px rgba(60, 40, 20, .25);
@@ -22,7 +23,7 @@
   :root {
     --bg: #1c1612; --bg-2: #241d18; --card: #2a221c;
     --ink: #f3eae0; --ink-2: #c6b7a8; --ink-3: #8d7d6f; --line: #3a3029;
-    --accent: #d98a4f; --accent-ink: #1c1612; --accent-soft: #3d2a1c;
+    --accent: #d98a4f; --accent-ink: #1c1612; --accent-soft: #3d2a1c; --scene: #221b16;
     --ok: #8fc48a; --warn: #f08a76;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
   }
@@ -157,9 +158,10 @@ textarea.input { min-height: 96px; resize: vertical; }
 .brew .elapsed { text-align: center; font-size: 56px; font-weight: 800; letter-spacing: -.02em; line-height: 1; margin-top: 8px; }
 .brew .elapsed .cap { display: block; font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .12em; margin-bottom: 8px; }
 .brew .target {
-  margin: 22px 0 0; text-align: center; background: var(--card); border-radius: 28px; padding: 22px 12px 18px; box-shadow: var(--shadow);
+  margin: 16px 0 0; text-align: center; background: var(--card); border-radius: 28px; padding: 14px 14px 18px; box-shadow: var(--shadow);
   transition: background .25s;
 }
+.brew .target .scene { display: block; width: 100%; height: auto; border-radius: 18px; background: var(--scene); margin-bottom: 10px; }
 .brew .target .label { font-size: 15px; font-weight: 700; color: var(--accent); }
 .brew .target .g { font-size: clamp(88px, 30vw, 132px); font-weight: 900; line-height: .95; letter-spacing: -.04em; }
 .brew .target .g small { font-size: 28px; font-weight: 700; color: var(--ink-3); margin-left: 4px; letter-spacing: 0; }

@@ -6,6 +6,7 @@ import { BrewTimer, locate } from "./timer.js";
 import { sound } from "./audio.js";
 import { storage } from "./storage.js";
 import { createWeightSource } from "./weight-source.js";
+import { createBarista } from "./barista.js";
 
 // ---- 文字列（後で多言語化しやすいよう 1 箇所に） ----------------------------
 const T = {
@@ -15,7 +16,7 @@ const T = {
   ratio: "比率", time: "時間", pours: "注湯", temp: "湯温", grind: "挽き目",
   dose: "粉量", water: "総湯量",
   start: "スタート", pause: "一時停止", resume: "再開", reset: "リセット", finishBrew: "終了してメモ",
-  ready: "準備できたらスタート", nextPour: "次の注湯まで", finishIn: "落ち切り目安まで", done: "抽出完了",
+  ready: "準備できたらスタート", nextPour: "次の注湯まで", finishIn: "落ち切り目安まで", done: "抽出完了", doneNote: "いい香り。ひと息ついたらメモを残しましょう",
   memoTitle: "抽出メモ", bean: "豆", rating: "評価", memo: "メモ・感想", save: "保存", skip: "保存せずに戻る",
   history: "履歴", noHistory: "まだ履歴がありません。淹れ終わると、ここに記録が残ります。", brewAgain: "もう一度淹れる",
   settings: "設定", soundOn: "合図音", wakeLock: "抽出中は画面を消さない", export: "バックアップを書き出す", import: "バックアップを読み込む",
@@ -44,7 +45,7 @@ function isBuiltin(r) { return state.builtin.some((b) => b.id === r.id); }
 
 // ---- ルーティング ------------------------------------------------------
 function navigate(route, params = {}, { replace = false } = {}) {
-  stopBrewLoop();
+  stopBrewLoop(); stopSceneLoop();
   state.route = route; state.params = params;
   const entry = { route, params };
   if (replace) history.replaceState(entry, ""); else history.pushState(entry, "");
@@ -52,7 +53,7 @@ function navigate(route, params = {}, { replace = false } = {}) {
 }
 addEventListener("popstate", (e) => {
   if (state.route === "brew" && state.brew?.timer.running) { state.brew.timer.pause(); }
-  stopBrewLoop();
+  stopBrewLoop(); stopSceneLoop();
   const s = e.state || { route: "home", params: {} };
   state.route = s.route; state.params = s.params; render();
 });
@@ -157,8 +158,10 @@ function renderDetail() {
 }
 
 // ---- ブルー画面 -------------------------------------------------------
-let loopId = 0, wakeLock = null;
+let loopId = 0, sceneId = 0, wakeLock = null;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function stopBrewLoop() { clearInterval(loopId); loopId = 0; releaseWakeLock(); }
+function stopSceneLoop() { clearInterval(sceneId); sceneId = 0; }
 function startBrewLoop(fn) { clearInterval(loopId); loopId = setInterval(fn, 100); }
 async function requestWakeLock() {
   if (!storage.getSettings().wakeLock) return;
@@ -173,12 +176,13 @@ function renderBrew() {
   const r = scaleRecipe(base, currentDose(base));
   chrome({ titleText: r.name, back: true, tabs: false });
   const timer = new BrewTimer();
-  const b = state.brew = { recipe: r, timer, announced: -1, ticked: new Set(), finished: false };
+  const b = state.brew = { recipe: r, timer, announced: -1, ticked: new Set(), finished: false, doneAt: 0 };
   const source = createWeightSource("manual");
 
   view.innerHTML = `<div class="brew">
     <div class="elapsed num"><span class="cap">経過</span><span id="el">0:00</span></div>
     <div class="target" id="target">
+      <svg class="scene" id="scene" viewBox="0 0 44 22" shape-rendering="crispEdges" aria-hidden="true"></svg>
       <div class="label" id="tlabel">${T.ready}</div>
       <div class="g num"><span id="tg">0</span><small>g</small></div>
       <div class="note" id="tnote">${T.scaleHint}</div>
@@ -194,6 +198,7 @@ function renderBrew() {
     <div class="btn-row"><button class="btn secondary block" id="btn-finish" hidden>${T.finishBrew}</button></div>
   </div>`;
 
+  const barista = createBarista($("#scene"));
   const el = { el: $("#el"), tlabel: $("#tlabel"), tg: $("#tg"), tnote: $("#tnote"), nk: $("#nk"), nto: $("#nto"), nv: $("#nv"), bar: $("#bar > i"), target: $("#target"), start: $("#btn-start"), finish: $("#btn-finish"), weight: $("#weight") };
   const total = totalTime(r);
 
@@ -216,7 +221,7 @@ function renderBrew() {
       el.nto.innerHTML = `${esc(loc.next.label)} → <span class="num">${loc.next.target_g}</span> g`;
     } else if (r.finish_s != null && !loc.done) {
       el.nk.textContent = T.finishIn; el.nto.textContent = "";
-    } else { el.nk.textContent = T.done; el.nto.textContent = ""; }
+    } else { el.nk.textContent = T.done; el.nto.textContent = ""; el.tlabel.textContent = T.done; el.tnote.textContent = T.doneNote; }
     if (loc.remainToNext != null && !loc.done) {
       const rem = Math.ceil(loc.remainToNext);
       el.nv.textContent = formatTime(rem);
@@ -239,6 +244,32 @@ function renderBrew() {
     if (loc.index >= r.steps.length - 1) el.finish.hidden = false;
   }
 
+  // ドット絵の場面。タイマーとは別に 100ms ごとに更新（完了演出やまばたきのため、一時停止中も動く）
+  function drawScene() {
+    const t = timer.elapsedS;
+    const loc = locate(r, t);
+    const now = performance.now() / 1000;
+    if (loc.done) {
+      if (!b.doneAt) b.doneAt = now;
+      barista.done(reduceMotion ? 0 : now, now - b.doneAt);
+      return;
+    }
+    b.doneAt = 0;
+    let fill = 0, pouring = false;
+    if (loc.step) {
+      const prevG = loc.index > 0 ? r.steps[loc.index - 1].target_g : 0;
+      const nextAt = loc.next ? loc.next.at_s : (r.finish_s ?? loc.step.at_s + 30);
+      const frac = Math.min(1, (t - loc.step.at_s) / Math.max(1, nextAt - loc.step.at_s));
+      fill = (prevG + (loc.step.target_g - prevG) * frac) / r.water_g;
+      // 注いでいるのはステップ前半（間隔の 6 割）。最後のステップは 20 秒まで
+      const window = loc.next ? (loc.next.at_s - loc.step.at_s) * 0.6 : 20;
+      pouring = timer.running && t - loc.step.at_s < window;
+    }
+    const blink = !reduceMotion && Math.floor(now * 4) % 16 === 0;
+    barista.brew(reduceMotion ? 0 : now, pouring, fill, blink);
+  }
+  stopSceneLoop(); sceneId = setInterval(drawScene, 100); drawScene();
+
   el.start.addEventListener("click", () => {
     sound.unlock();
     if (timer.running) { timer.pause(); el.start.textContent = T.resume; stopBrewLoop(); }
@@ -251,7 +282,7 @@ function renderBrew() {
     draw();
   });
   $("#btn-reset").addEventListener("click", () => {
-    timer.reset(); b.announced = -1; b.ticked.clear(); b.finished = false; el.start.textContent = T.start; el.finish.hidden = true;
+    timer.reset(); b.announced = -1; b.ticked.clear(); b.finished = false; b.doneAt = 0; el.start.textContent = T.start; el.finish.hidden = true;
     el.tlabel.textContent = T.ready; el.tg.textContent = "0"; el.tnote.textContent = T.scaleHint; releaseWakeLock(); stopBrewLoop(); draw();
   });
   el.finish.addEventListener("click", () => { timer.pause(); const elapsed = timer.elapsedS; stopBrewLoop(); navigate("memo", { id: base.id, coffee_g: r.coffee_g, water_g: r.water_g, elapsed_s: Math.round(elapsed) }); });

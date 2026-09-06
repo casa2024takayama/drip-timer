@@ -9,7 +9,8 @@ iPhone の Safari で開き、共有ボタン →「ホーム画面に追加」�
 
 ## できること
 
-- **公式レシピ**: 4:6 メソッド（粕谷哲）、ハリオ V60 標準
+- **公式レシピ**: 4:6 メソッド（粕谷哲）、ハリオ V60 標準に加えて、チェリーのような果実感を狙う「フルーティー」タグの 6 本（4:6 酸味強調版、James Hoffmann 1 杯用、Matt Winton 5 Pour、Lance Hedrick 1-2-1、ONIBUS COFFEE 浅煎り、GLITCH COFFEE 低温）
+- **ドット絵のバリスタ**: 抽出中はケトルから注ぎ、サーバーに液面が溜まります。落ち切り目安を過ぎるとサーバーからカップに注ぎ、カップの香りを嗅ぎます
 - **粉量スライダー**: 粉量を変えると湯量と各ステップの累計 g が比例して変わります（秒はそのまま）
 - **ブルー画面**: 経過時間、いまの目標累計 g、次の注湯までの残り秒を大きく表示。3・2・1 のカウント音と注湯開始の合図音
 - **抽出メモ・履歴**: 豆、挽き目、湯温、5 段階評価、感想を記録。「もう一度淹れる」で前回の粉量を復元
@@ -80,8 +81,15 @@ node --test test/recipe.test.mjs
 
 ## 出典
 
-- 4:6 メソッド: 粕谷哲氏が公開している手順の要約
+- 4:6 メソッド / 酸味強調版: 粕谷哲氏（PHILOCOFFEA）が公開している手順の要約。酸味強調版の配分は https://en.philocoffea.com/blogs/blog/coffee-brewing-method
 - ハリオ V60: HARIO が案内する標準的な淹れ方の要約
+- James Hoffmann 1 杯用 V60: https://aeroprecipe.com/recipes/james-hoffmann-better-1-cup-v60-technique
+- Matt Winton 5 Pour: HARIO 公式動画の要約 https://www.youtube.com/watch?v=YIC-2nFQ7vM （3〜5 回目の秒数は目安）
+- Lance Hedrick 1-2-1: https://www.coffeecalculator.app/blog/lance-hedrick-pour-over-recipe
+- ONIBUS COFFEE 浅煎りホット: https://onibuscoffee.com/en/pages/brewing_guide/driphot
+- GLITCH COFFEE 低温 V60: https://tokyocafegallery.com/glitch-%E3%83%AC%E3%82%B7%E3%83%94/ （挽き目・落ち切り秒数は目安）
+
+数値は各出典の公開値を要約したものです。ご本人・各社とは無関係で、レシピの権利は考案者に帰属します。
 
 ## ライセンス
 

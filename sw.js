@@ -1,10 +1,10 @@
 // オフライン用キャッシュ。デプロイのたびに VERSION を上げる。
-const VERSION = "v1.0.0";
+const VERSION = "v1.1.0";
 const CACHE = `drip-timer-${VERSION}`;
 const ASSETS = [
   "./", "./index.html", "./manifest.webmanifest",
   "./css/app.css",
-  "./js/app.js", "./js/recipe.js", "./js/timer.js", "./js/audio.js", "./js/storage.js", "./js/weight-source.js", "./js/vendor/qrcode.js",
+  "./js/app.js", "./js/recipe.js", "./js/timer.js", "./js/audio.js", "./js/storage.js", "./js/weight-source.js", "./js/barista.js", "./js/vendor/qrcode.js",
   "./recipes/builtin.json",
   "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-512-maskable.png", "./icons/apple-touch-icon.png",
 ];

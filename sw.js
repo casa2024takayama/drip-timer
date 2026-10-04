@@ -1,5 +1,5 @@
 // オフライン用キャッシュ。デプロイのたびに VERSION を上げる。
-const VERSION = "v1.1.0";
+const VERSION = "v1.2.0";
 const CACHE = `drip-timer-${VERSION}`;
 const ASSETS = [
   "./", "./index.html", "./manifest.webmanifest",
